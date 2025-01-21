@@ -1,0 +1,79 @@
+First create table university_professors with columns firstname, lastname, university, university_shortname,
+university_city, function, organization, organization_srctor and datatype VARCHAR
+
+--create table university_professors
+CREATE TABLE university_professors(
+firstname VARCHAR(150),
+lastname VARCHAR(150),
+university VARCHAR(150),
+university_shortname VARCHAR(150),
+university_city VARCHAR(150),
+function VARCHAR(150),
+organization VARCHAR(150),
+organization_sector VARCHAR(150));
+
+SELECT * FROM university_professors;
+
+-- Creating the universities table with column university_id make is surrogate key, university,
+university_shortname, university_city
+CREATE TABLE universities (
+    university_id serial PRIMARY KEY,
+    university VARCHAR(255) NOT NULL,
+    university_shortname VARCHAR(50) NOT NULL UNIQUE,
+    university_city VARCHAR(255) NOT NULL
+);
+SELECT * FROM universities;
+
+apply insert into function to check data inserted successfuly
+
+INSERT INTO universities (university, university_shortname, university_city)
+SELECT DISTINCT university, university_shortname, university_city
+FROM university_professors;
+
+-- Creating the organizations table
+CREATE TABLE organizations (
+    organization_id serial PRIMARY KEY,
+    organization VARCHAR(255) NOT NULL ,
+    organization_sector VARCHAR(255) NOT NULL
+);
+ SELECT * FROM organizations;
+ 
+ INSERT INTO organizations (organization, organization_sector)
+SELECT DISTINCT organization, organization_sector
+FROM university_professors up
+WHERE NOT EXISTS (
+    SELECT 1 FROM organizations o WHERE o.organization = up.organization
+);
+--create table proffessors and set university_shortname as foreing key
+CREATE TABLE professors (
+    professor_id serial PRIMARY KEY,
+    firstname VARCHAR(150) NOT NULL,
+    lastname VARCHAR(150) NOT NULL,
+    university_shortname VARCHAR(150) NOT NULL,
+    FOREIGN KEY (university_shortname) REFERENCES universities(university_shortname)
+);
+ SELECT * FROM professors;
+
+ INSERT INTO professors (firstname, lastname, university_shortname)
+SELECT firstname, lastname, university_shortname
+FROM university_professors;
+
+-- create affiliations table and set column universiy_shortname and organization as foreign key for referential integrity
+CREATE TABLE affiliations (
+    id SERIAL PRIMARY KEY,
+    organization VARCHAR(255) NOT NULL,
+    university_shortname VARCHAR(255) NOT NULL,
+    function VARCHAR(255) NOT NULL,
+    firstname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
+    FOREIGN KEY (university_shortname) REFERENCES universities(university_shortname),
+	FOREIGN KEY (organization) REFERENCES organizations(organization)
+);
+
+   INSERT INTO affiliations (organization, university_shortname, function, firstname, lastname)
+SELECT DISTINCT organization, university_shortname, function, firstname, lastname
+FROM university_professors; 
+
+SELECT * FROM affiliations;
+
+

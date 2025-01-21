@@ -1,5 +1,5 @@
 First create table university_professors with columns firstname, lastname, university, university_shortname,
-university_city, function, organization, organization_srctor and datatype VARCHAR
+university_city, function, organization, organization_sector and datatype VARCHAR
 
 --create table university_professors
 CREATE TABLE university_professors(

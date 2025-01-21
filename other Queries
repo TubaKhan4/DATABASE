@@ -1,0 +1,52 @@
+--inseert
+INSERT INTO professors (firstname, lastname, university_shortname)
+SELECT firstname, lastname, university_shortname
+FROM university_professors;
+SELECT * FROM professors;
+
+--delete 
+DELETE FROM universities
+WHERE university_shortname = 'shortname'; -- Replace 'shortname' with the actual short name
+
+
+--joining two tables 
+SELECT 
+    p.professor_id,
+    p.firstname AS professor_firstname,
+    p.lastname AS professor_lastname,
+    p.university_shortname,
+    up.university,
+    up.university_city,
+    up.function,
+    up.organization,
+    up.organization_sector
+FROM 
+    professors p
+JOIN 
+    university_professors up
+ON 
+    p.firstname = up.firstname 
+    AND p.lastname = up.lastname 
+    AND p.university_shortname = up.university_shortname;
+
+--update
+
+-- Step 1: Add organization_id column to university_professors
+ALTER TABLE university_professors
+ADD COLUMN organization_id INT;
+
+-- Step 2: Populate organization_id in university_professors
+UPDATE university_professors up
+SET organization_id = (
+    SELECT o.organization_id
+    FROM organizations o
+    WHERE o.organization = up.organization
+    AND o.organization_sector = up.organization_sector
+);
+
+-- Step 3: Add foreign key constraint
+ALTER TABLE university_professors
+ADD CONSTRAINT fk_organization
+FOREIGN KEY (organization_id)
+REFERENCES organizations(organization_id)
+ON DELETE CASCADE;
